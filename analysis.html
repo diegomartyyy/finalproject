@@ -1,0 +1,78 @@
+<h1><span style="text-decoration: underline; color: #ff0000;">Coursera's final project</span></h1>
+<p>The goal of this project is to <strong>build a machine learning algorithm that will allow us to predict 20 cases</strong>, using a provided training data file.<br />Precisely, we must predict which of the 5 ways 20 participants perform a weight-lifting exercice, ranging from A to E :</p>
+<ul>
+<li>Exactly according to the specification (Class A)</li>
+<li>Throwing the elbows to the front (Class B)</li>
+<li>Lifting the dumbbell only halfway (Class C)</li>
+<li>Lowering the dumbbell only halfway (Class D)</li>
+<li>Throwing the hips to the front (Class E)</li>
+</ul>
+<p>First of all we must read and tidy the data, as there are many errors and blanks that remain.</p>
+<h3>Reading and cleaning data</h3>
+<p>We have two files, 'pmv-training.csv' and 'pmv-testing.csv'.<br />The first one will allow us to build the algorithm while the test data are the questions we must answer.<br />We read these csv files into R using the read function, and we replace blank and incorrect values with 'NA' among the training data.<br />Once this is done, we erase unsatisfying variables, let's say those with more than 50% of 'NA' values.<br />We remain with 52 columns after these operations : acceleration, gyroscope, and magnetometer sensors, as well as the overall acceleration, pitch, roll and yaw.</p>
+<h3><br />Random forests algorithm</h3>
+<p>I decided to use the random forests method, as it is one of the most performing and precise in the field of machine learning.<br />Because the test data is only available for us to compute forecasts, we must divide the traning data into two subsambles for traning and actual testing.<br />I decided to split the training file 60/40, with 60% of the data allowing us to build the model, and 40% assessing its precision.<br />Since we use random forests, we don't need to cross-validate, as it is an automatic process while the model is being built.</p>
+<p>We implement the algorithm ('rf') available in the caret package, using the 'classe' variable.<br />After this, we compute the confusion matrix using the correponding function of the package.<br />The result is a high precision of 99.5%.</p>
+<p>Therefore the model is very adapted, and we can strongly believe in the predictions of the 20 cases.</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Actual</p>
+<table style="width: 358px; height: 80px;">
+<tbody>
+<tr style="height: 17px;">
+<td style="width: 65px; height: 17px;">&nbsp;</td>
+<td style="width: 111px; height: 17px;">&nbsp;</td>
+<td style="width: 48px; height: 17px;">A</td>
+<td style="width: 54px; height: 17px;">B</td>
+<td style="width: 96px; height: 17px;">C</td>
+<td style="width: 44px; height: 17px;">D</td>
+<td style="width: 78px; height: 17px;">E</td>
+</tr>
+<tr style="height: 18px;">
+<td style="width: 65px; height: 18px;">&nbsp;</td>
+<td style="width: 111px; height: 18px;">A</td>
+<td style="width: 48px; height: 18px;">2230</td>
+<td style="width: 54px; height: 18px;">1</td>
+<td style="width: 96px; height: 18px;">0</td>
+<td style="width: 44px; height: 18px;">0</td>
+<td style="width: 78px; height: 18px;">0</td>
+</tr>
+<tr style="height: 18px;">
+<td style="width: 65px; height: 18px;">Predictions</td>
+<td style="width: 111px; height: 18px;">B</td>
+<td style="width: 48px; height: 18px;">2</td>
+<td style="width: 54px; height: 18px;">1516</td>
+<td style="width: 96px; height: 18px;">9</td>
+<td style="width: 44px; height: 18px;">0</td>
+<td style="width: 78px; height: 18px;">0</td>
+</tr>
+<tr style="height: 18px;">
+<td style="width: 65px; height: 18px;">&nbsp;</td>
+<td style="width: 111px; height: 18px;">C</td>
+<td style="width: 48px; height: 18px;">0</td>
+<td style="width: 54px; height: 18px;">1</td>
+<td style="width: 96px; height: 18px;">1357</td>
+<td style="width: 44px; height: 18px;">16</td>
+<td style="width: 78px; height: 18px;">0</td>
+</tr>
+<tr style="height: 18px;">
+<td style="width: 65px; height: 18px;">&nbsp;</td>
+<td style="width: 111px; height: 18px;">D</td>
+<td style="width: 48px; height: 18px;">0</td>
+<td style="width: 54px; height: 18px;">0</td>
+<td style="width: 96px; height: 18px;">2</td>
+<td style="width: 44px; height: 18px;">1270</td>
+<td style="width: 78px; height: 18px;">4</td>
+</tr>
+<tr style="height: 18px;">
+<td style="width: 65px; height: 18px;">&nbsp;</td>
+<td style="width: 111px; height: 18px;">E</td>
+<td style="width: 48px; height: 18px;">0</td>
+<td style="width: 54px; height: 18px;">0</td>
+<td style="width: 96px; height: 18px;">0</td>
+<td style="width: 44px; height: 18px;">0</td>
+<td style="width: 78px; height: 18px;">1438</td>
+</tr>
+</tbody>
+</table>
+<h3><br />Important variables for the model</h3>
+<p>After collecting forecasted data with the model and testing with, we find out the importance of the different columns (variables). For this, we classify variables with mean decreasing accuracy. We find out that the most important data are those of the belt sensor (roll, then yawn, then pitch). The other sensors look relatively important compared to each other.</p>
+<p>&nbsp;</p>
