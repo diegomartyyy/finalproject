@@ -1,0 +1,86 @@
+---
+title: "Coursera project"
+author: "Diego Marty"
+date: "20/05/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+```{r}
+library(caret);library(doParallel);library(randomForest)
+set.seed(23454561)
+
+
+#we read the training and test sets#
+#we replace any blank or undifined value by 'NA'#
+```{r}
+trainingSet <- read.csv('pml-training.csv', na.strings=c("NA","#DIV/0!", ""))
+testSet <- read.csv('pml-test.csv' , na.strings=c("NA", "#DIV/0!", ""))
+```
+
+#We decide to keep only columns that at least half full#
+#Other variables are not taken into account#
+```{r}
+keptVariables    <- which((colSums(!is.na(trainingSet)) >= 0.5*nrow(trainingSet)))
+trainingSet <- trainingSet[,keptVariables]
+testSet <- testSet[,keptVariables]
+```
+
+#We fix issues about variables ID and factor levels#
+```{r}
+testSet <- testSet[-ncol(testSet)]
+testSet$new_window <- factor(testSet$new_window, levels=c("no","yes"))
+```
+
+#We also remove the X and the timestamp variables as they are useless#
+```{r}
+trainingSet <- trainingSet[,-c(1,5)]
+testSet <- testSet[,-c(1,5)]
+```
+
+#Now we can partition the data into 60% training set and 40% test set#
+```{r}
+training <- createDataPartition(trainingSet$classe, p = 0.6, list = FALSE)
+training <- trainingSet[training, ]
+testing <- trainingSet[-training, ]
+```
+
+#We put 
+```{r}
+class <- training$classe
+data <- training[-ncol(training)]
+```
+
+#fitting random forests model#
+```{r}
+registerDoParallel()
+rf <- train(data, class, method="parRF", 
+            tuneGrid=data.frame(mtry=3), 
+            trControl=trainControl(method="none"))
+```
+
+#computing the confusion Matrix for the testing set#
+```{r}
+testingPredictions <- predict(rf, newdata=testing)
+confMatrix <- confusionMatrix(testingPredictions,testing$classe)
+confMatrix
+confMa```trix$overall[1]
+```
+
+#submitting results#
+```{r}
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+
+answers <- predict(rf, testSet)
+pml_write_files(answers)
+```
